@@ -2,11 +2,13 @@ var path = require('path')
 var webpack = require('webpack')
 
 module.exports = {
-  entry: path.join(__dirname, 'src/client/index.js'),
+  entry:{
+    index: path.join(__dirname, 'src/client/index.js')
+  },
   output: {
-    path: path.join(__dirname, 'src/server/public/javascripts/'),
-    publicPath: '/javascripts/',
-    filename: 'build.js'
+    path: path.join(__dirname, 'src/client/build/js'),
+    publicPath: '/build/js/',
+    filename: '[name].min.js'
   },
   resolve: {
     extensions: ['', '.js', '.vue']
@@ -39,8 +41,16 @@ module.exports = {
         loader: 'vue'
       },
       {
+        test: /\.css$/,
+        loader: 'css'
+      },
+      {
         test: /\.json$/,
         loader: 'json'
+      },
+      {
+        test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
+        loader: 'file'
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
@@ -57,6 +67,11 @@ module.exports = {
     formatter: require('eslint-friendly-formatter')
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      }
+    })
   ]
 }

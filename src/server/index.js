@@ -14,6 +14,7 @@ import config from '../../webpack.config'
 const app = express()
 
 // view engine setup
+app.set('port', process.env.PORT || 9292);
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
@@ -25,6 +26,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 // 设置public文件夹为存放静态文件的目录
 app.use(express.static(path.join(__dirname, 'public')))
+// 设置静态资源目录
+app.use('/static',express.static('src/client/static'))
 
 const compiler = webpack(config)
 
@@ -35,26 +38,10 @@ app.use(webpackDevMiddleware(compiler, {
 
 app.use(webpackHotMiddleware(compiler))
 
-app.use('/', router)
+router(app);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found')
-  err.status = 404
-  next(err)
-})
-
-// error handler
-// will print stacktrace
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500)
-  res.render('error', {
-    message: err.message,
-    error: err
-  })
-})
-
-app.listen(4000)
-console.log('端口号:4000')
+app.listen(app.get('port'), function() {
+  console.log('Express server listening on port ' + app.get('port'));
+});
 
 export default app
